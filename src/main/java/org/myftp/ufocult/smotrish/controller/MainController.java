@@ -4,6 +4,7 @@ import org.myftp.ufocult.smotrish.domain.Channel;
 import org.myftp.ufocult.smotrish.repos.ChannelRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,9 +26,17 @@ public class MainController {
     }
 
     @GetMapping("/main")
-    public String main(Map<String, Object> model){
+    public String main(@RequestParam(required = false, defaultValue = "") String filter, Model model){
         Iterable<Channel> channels = channelRepo.findAll();
-        model.put("channels", channels);
+
+        if(filter != null && !filter.isEmpty()){
+            channels = channelRepo.findByName(filter);
+        }else {
+            channels = channelRepo.findAll();
+        }
+
+        model.addAttribute("channels", channels);
+        model.addAttribute("filter", filter);
 
         return "main";
     }
@@ -42,20 +51,6 @@ public class MainController {
         model.put("channels", channels);
 
         channelRepo.save(channel);
-        return "main";
-    }
-
-    @PostMapping("filter")
-    public String filter(
-            @RequestParam String filter,
-            Map<String, Object> model){
-                Iterable<Channel> channels;
-                if(filter != null && !filter.isEmpty()){
-                    channels = channelRepo.findByName(filter);
-                }else {
-                    channels = channelRepo.findAll();
-                }
-                model.put("channels", channels);
         return "main";
     }
 
