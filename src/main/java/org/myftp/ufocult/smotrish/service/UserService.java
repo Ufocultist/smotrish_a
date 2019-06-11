@@ -64,7 +64,7 @@ public class UserService implements UserDetailsService {
                     user.getActivationCode()
 
             );
-            mailSender.send(user.getEmail(), "Smotri.sh Activation code", message);
+            mailSender.send();
         }
     }
 
